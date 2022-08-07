@@ -10,7 +10,7 @@ which is a non-blocking version of `_getch()`, which returns EOF if no character
 
 # Usage
 * Add the `linux_conio.h` and `linux_conio.cpp` files to your project
-* #include `linux_conio.h`
+* Include the `linux_conio.h` header file in your project
 * Call `enable_conio_mode()` every time before the library is used (if *conio mode* is currently disabled)
 * Use `_getch()`, `_kbhit()` and/or `getch_noblock()` as you would normally 
 * Call `disable_conio_mode()` when your program is closing to restore the console settings.
