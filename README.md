@@ -1,8 +1,8 @@
 # Linux implementation of <conio.h>
-This project implements the Windows-specific functions `_getch()` and `_kbhit()` from `conio.h`. These functions are used to read characters from stdin, without the user having to press *enter*, with the option to do it in a non-blocking way, which can be used to detect keypresses without having to "pause" the application.
+This project implements the Windows-specific functions `_getch()` and `_kbhit()` from `conio.h`. These functions are used to read characters from stdin, without the user having to press *enter*, with the option to do it in a non-blocking way, which can be used to detect keypresses without having to "pause" the application while waiting for input.
 
 ## Cross platform
-Despite being an implementation of a Windows API for Linux, this project also works for Windows. The only function which is implemented for Windows and adds onto the already existing functionality is:
+Despite being an implementation of a Windows API for Linux, this project also works for Windows. The only function which is "implemented" for Windows (ie. adds onto the already existing functionality) is:
 ```c++
 int getch_noblock(); 
 ```
