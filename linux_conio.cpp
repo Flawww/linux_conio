@@ -2,7 +2,7 @@
 
 #ifndef _WIN32
 
-struct termios oldattr, newattr;
+struct termios old_attributes, new_attributes;
 int old_block_mode;
 bool conio_mode = false;
 bool should_enable_conio = false;
@@ -48,7 +48,7 @@ void cont_handler(int s) {
     sigaction(SIGTSTP, &sig_handler, NULL);
 }
 
-// We need to intercept various kill signals so that we can reset the console settings if needed on Linux
+// We need to intercept various kill/suspend signals so that we can reset the console settings if needed on Linux (Some are not possible to intercept, like SIGKILL or SIGSTOP, but this will do for now)
 void setup_signal_interceptor() {
     struct sigaction sig_handler;
     sig_handler.sa_handler = exit_handler;
@@ -75,10 +75,10 @@ void enable_conio_mode() {
     }
     conio_mode = true;
     
-    tcgetattr(STDIN_FILENO, &oldattr);
-    newattr = oldattr;
-    newattr.c_lflag &= ~(ICANON | ECHO);
-    tcsetattr(STDIN_FILENO, TCSANOW, &newattr);
+    tcgetattr(STDIN_FILENO, &old_attributes);
+    new_attributes = old_attributes;
+    new_attributes.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &new_attributes);
 }
 
 // allow kbhit and getch on linux
@@ -88,7 +88,7 @@ void disable_conio_mode() {
     }
     conio_mode = false;
     
-    tcsetattr(STDIN_FILENO, TCSANOW, &oldattr);
+    tcsetattr(STDIN_FILENO, TCSANOW, &old_attributes);
 }
 
 // linux implementation of _getch()
@@ -97,6 +97,7 @@ int _getch() {
     if (!mode) {
         enable_conio_mode();
     }   
+    
     char c = getchar();
     
     if (!mode) {
@@ -126,6 +127,7 @@ bool _kbhit() {
     return false;
 }
 
+// Linux implementation of a non-blocking version of getch 
 int getch_noblock() {
     enable_noblock();
     int c = _getch();
@@ -140,6 +142,7 @@ void setup_signal_interceptor() {}
 void disable_conio_mode() {}
 void enable_conio_mode() {}
 
+// Windows implementation of a non-blocking getch
 int getch_noblock() {
     if (_kbhit()) {
         return _getch();
